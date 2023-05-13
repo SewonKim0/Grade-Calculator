@@ -40,14 +40,57 @@ function Calculate({gradeData}) {
                 //check: weights
                 for (let categoryId in gradeData) {
                     if (!check(gradeData[categoryId][1])) {
-                        textRef.textContent = "Error: Invalid category weight value";
+                        textRef.current.textContent = "Error: Invalid category weight value";
                         return;
                     }
                 }
                 //check: scores
+                for (let categoryId in gradeData) {
+                    let categoryData = gradeData[categoryId][2];
+                    for (let itemId in categoryData) {
+                        let score = categoryData[itemId][1];
+                        if (!check(score)) {
+                            textRef.current.textContent = "Error: Invalid item score";
+                            return;
+                        }
+                    }
+                }
                 //check: totalScores
+                for (let categoryId in gradeData) {
+                    let categoryData = gradeData[categoryId][2];
+                    for (let itemId in categoryData) {
+                        let totalScore = categoryData[itemId][2];
+                        if (!check(totalScore)) {
+                            textRef.current.textContent = "Error: Invalid item total score";
+                            return;
+                        }
+                    }
+                }
+
                 //calculate grade
+                let total = 0;
+                for (let categoryId in gradeData) {
+                    //get weight
+                    let weight = gradeData[categoryId][1];
+                    //get category average
+                    let categoryScore = 0;
+                    let categoryTotalScore = 0;
+                    for (let itemId in gradeData[categoryId][2]) {
+                        let itemData = gradeData[categoryId][2][itemId];
+                        categoryScore += parseFloat(itemData[1]);
+                        categoryTotalScore += parseFloat(itemData[2]);
+                    }
+                    
+                    //edge case: 0 total
+                    if (categoryTotalScore === 0) {
+                        continue;
+                    }
+                    //add to category total
+                    total += (weight * 0.01) * (categoryScore / categoryTotalScore);
+                }
+
                 //display
+                textRef.current.textContent = "Score: " + total;
             }}
         >
         <p> Calculate </p>
